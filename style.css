@@ -1,4 +1,3 @@
-/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -20,7 +19,7 @@
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --transition-speed: 0.3s;
     
-    /* Font */
+    
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -147,7 +146,7 @@ body {
     font-weight: 500;
 }
 
-/* Updated Sidebar Styles */
+ 
 .sidebar {
     width: 260px;
     background-color: var(--sidebar-bg);
@@ -212,7 +211,6 @@ body {
     padding-left: 4px;
 }
 
-/* Update existing sidebar toggle styles */
 .sidebar-toggle {
     background: none;
     border: none;
@@ -233,7 +231,7 @@ body {
     color: var(--text-primary);
 }
 
-/* Update chat history items */
+
 .chat-history li {
     padding: 12px;
     border-radius: 8px;
@@ -254,7 +252,7 @@ body {
     color: var(--text-secondary);
 }
 
-/* Sidebar Styles */
+
 .sidebar {
     width: 260px;
     background-color: var(--sidebar-bg);
@@ -428,7 +426,7 @@ body {
     gap: 12px;
 }
 
-/* Dropdown Styles */
+/* Dropdown  */
 .dropdown {
     position: relative;
 }
@@ -484,8 +482,8 @@ body {
     background-color: var(--secondary-bg);
 }
 
-/* About Us Button */
-/* Enhanced About Us Button with Light Purple Theme */
+/* About Us  */
+
 .about-us-btn {
     padding: 10px 20px;
     background: linear-gradient(135deg, #9d7bff, #7c4dff);
@@ -545,7 +543,7 @@ body {
     z-index: 2;
 }
 
-/* Button with glow effect on hover */
+
 .about-us-btn:hover {
     animation: buttonGlow 2s infinite;
 }
@@ -595,19 +593,17 @@ body {
                 0 4px 12px rgba(156, 108, 255, 0.3);
 }
 
-/* Update button position in header for better spacing */
 .header-right {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-/* Adjust other buttons to match spacing */
+
 .dropdown-toggle, .theme-btn {
-    border-radius: 10px; /* Slightly more rounded to match About Us button */
+    border-radius: 10px; 
 }
 
-/* Add some spacing between buttons */
 .about-us-btn + .dropdown {
     margin-left: 4px;
 }
@@ -636,14 +632,14 @@ body {
     }
 }
 
-/* Active state for when modal is open */
+/* Active state  when modal is open */
 .about-us-btn.active {
     background: linear-gradient(135deg, #8c6bff, #6a3dff);
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2),
                 0 4px 12px rgba(156, 108, 255, 0.4);
 }
 
-/* Add a subtle border for better definition in light mode */
+
 .light-mode .about-us-btn {
     border: 1px solid rgba(124, 77, 255, 0.2);
 }
@@ -690,7 +686,6 @@ body {
     border-bottom: 2px solid var(--accent-color);
 }
 
-/* Scroll Indicator Styles */
 .scroll-indicator {
     text-align: center;
     margin: 20px 0 30px;
@@ -1590,4 +1585,5 @@ textarea#messageInput::placeholder {
     .dropdown-toggle {
         padding: 8px;
     }
+
 }
