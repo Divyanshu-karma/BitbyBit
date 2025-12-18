@@ -1,7 +1,6 @@
 // CALTech-chat Application
 document.addEventListener('DOMContentLoaded', function() {
-    // Application state
-    // Application state
+   
 const state = {
     currentTheme: localStorage.getItem('caltech-theme') || 'light',
     sidebarOpen: localStorage.getItem('caltech-sidebar') !== 'closed',
@@ -11,7 +10,7 @@ const state = {
     groupMembers: []
 };
 
-    // DOM Elements
+    //  Elements
     const elements = {
         sidebar: document.querySelector('.sidebar'),
         sidebarToggle: document.getElementById('sidebarToggle'),
@@ -45,28 +44,28 @@ closeAboutModal: document.getElementById('closeAboutModal'),
 closeAboutBtn: document.getElementById('closeAboutBtn')
     };
 
-    // Initialize the application
+    // Initialize  application
     function init() {
-        // Apply saved theme
+        
         applyTheme(state.currentTheme);
         
-        // Apply sidebar state
+       
         if (!state.sidebarOpen) {
             toggleSidebar();
         }
         
-        // Load chat history
+       
         loadChatHistory();
         
-        // Set up event listeners
+        
         setupEventListeners();
         
-        // Load messages if there's an active chat
+      
         if (state.currentChatId) {
             loadMessages(state.currentChatId);
         }
         
-        // Update theme button active state
+       
         updateThemeButtons();
         // Apply sidebar collapsed/expanded state
 if (!state.sidebarOpen) {
@@ -79,19 +78,17 @@ if (!state.sidebarOpen) {
 }
     }
 
-    // Event Listeners Setup
+    // Event listeners 
     function setupEventListeners() {
-        // Sidebar toggle
+       
         elements.sidebarToggle.addEventListener('click', toggleSidebar);
         elements.menuToggle.addEventListener('click', toggleSidebar);
-        
-        // Expand sidebar from collapsed strip
 elements.expandSidebarBtn.addEventListener('click', toggleSidebar);
 
-// New chat button in collapsed strip
+// New chat button
 elements.newChatStripBtn.addEventListener('click', startNewChat);
 
-// About Us modal
+// About Us 
 elements.aboutUsBtn.addEventListener('click', openAboutModal);
 elements.closeAboutModal.addEventListener('click', closeAboutModal);
 elements.closeAboutBtn.addEventListener('click', closeAboutModal);
@@ -112,14 +109,14 @@ elements.aboutModalOverlay.addEventListener('click', function(e) {
             }
         });
         
-        // Auto-resize textarea
+        // Auto resize textarea
         elements.messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
             elements.sendBtn.disabled = this.value.trim() === '';
         });
         
-        // Theme switching
+        // Theme switch
         elements.themeButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 const theme = this.getAttribute('data-theme');
@@ -138,7 +135,7 @@ elements.aboutModalOverlay.addEventListener('click', function(e) {
             elements.groupsDropdown.classList.remove('show');
         });
         
-        // Group creation modal
+        // Group creation 
         elements.createGroupBtn.addEventListener('click', function(e) {
             e.preventDefault();
             openGroupModal();
@@ -163,13 +160,11 @@ elements.aboutModalOverlay.addEventListener('click', function(e) {
         addMemberToGroup();
         }
         });
-
-// Enable/disable add button based on input
 elements.memberInput.addEventListener('input', function() {
     const addMemberBtn = document.getElementById('addMemberBtn');
     addMemberBtn.disabled = this.value.trim() === '';
 });
-        // Add member button
+        // Add member 
 document.getElementById('addMemberBtn').addEventListener('click', function() {
     addMemberToGroup();
 });
@@ -182,7 +177,7 @@ document.getElementById('addMemberBtn').addEventListener('click', function() {
         }
     }
 
-    // Theme Functions
+    // Theme 
     function switchTheme(theme) {
         state.currentTheme = theme;
         applyTheme(theme);
@@ -209,10 +204,10 @@ document.getElementById('addMemberBtn').addEventListener('click', function() {
         const sidebar = elements.mainSidebar;
         const collapsedStrip = elements.sidebarCollapsedStrip;
         
-        // Toggle main sidebar
+        // Toggle  sidebar
         sidebar.classList.toggle('collapsed');
         
-        // Toggle collapsed strip visibility
+      
         if (sidebar.classList.contains('collapsed')) {
             collapsedStrip.classList.add('show');
         } else {
@@ -645,8 +640,7 @@ document.getElementById('addMemberBtn').addEventListener('click', function() {
                 this.classList.remove('visible');
             }, 300);
         });
-        
-        // Also support mouse wheel for desktop
+    
         modalBody.addEventListener('wheel', function() {
             if (this.scrollTop > 100) {
                 scrollIndicator.classList.add('hidden');
@@ -655,4 +649,5 @@ document.getElementById('addMemberBtn').addEventListener('click', function() {
     }
     // Initialize the app
     init();
+
 });
