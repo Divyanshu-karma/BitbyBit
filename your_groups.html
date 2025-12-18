@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Groups - CALTech-chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-mode">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar sidebar-open">
+            <div class="sidebar-header">
+                <h1 class="app-name"><i class="fas fa-robot"></i> CALTech-chat</h1>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+            
+            <div class="groups-nav">
+                <a href="index.html" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Chat
+                </a>
+                
+                <div class="groups-list">
+                    <h3>Your Groups</h3>
+                    <ul id="groupsList">
+                        <!-- Groups will be populated by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span>User</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2>Your Groups</h2>
+                </div>
+                
+                <div class="header-right">
+                    <!-- Theme Switcher -->
+                    <div class="theme-switcher">
+                        <button class="theme-btn active" data-theme="light" title="Light Mode">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                        <button class="theme-btn" data-theme="dark" title="Dark Mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <button class="theme-btn" data-theme="bolt" title="Bolt Mode">
+                            <i class="fas fa-bolt"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Groups Container -->
+            <div class="groups-container">
+                <div class="groups-welcome" id="groupsWelcome">
+                    <div class="welcome-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h2>Group Management</h2>
+                    <p>Select a group from the sidebar to view members and chat history.</p>
+                </div>
+                
+                <div class="group-details" id="groupDetails" style="display: none;">
+                    <div class="group-header">
+                        <h3 id="selectedGroupName">Group Name</h3>
+                        <div class="group-meta">
+                            <span id="memberCount">0 members</span>
+                            <span id="groupCreated">Created on</span>
+                        </div>
+                    </div>
+                    
+                    <div class="members-section">
+                        <h4>Group Members</h4>
+                        <div class="members-list" id="membersList">
+                            <!-- Members will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="member-chat-section">
+                        <h4>Member Chat History</h4>
+                        <div class="member-selector">
+                            <select id="memberSelect">
+                                <option value="">Select a member</option>
+                            </select>
+                        </div>
+                        
+                        <div class="member-chat" id="memberChat">
+                            <div class="no-chat-selected">
+                                <i class="fas fa-comment-dots"></i>
+                                <p>Select a member to view chat history</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Your Groups Page JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const state = {
+                currentTheme: localStorage.getItem('caltech-theme') || 'light',
+                sidebarOpen: localStorage.getItem('caltech-sidebar') !== 'closed',
+                groups: JSON.parse(localStorage.getItem('caltech-groups')) || [],
+                selectedGroup: null,
+                memberChats: JSON.parse(localStorage.getItem('caltech-member-chats')) || {}
+            };
+
+            const elements = {
+                sidebar: document.querySelector('.sidebar'),
+                sidebarToggle: document.getElementById('sidebarToggle'),
+                menuToggle: document.getElementById('menuToggle'),
+                groupsList: document.getElementById('groupsList'),
+                groupsWelcome: document.getElementById('groupsWelcome'),
+                groupDetails: document.getElementById('groupDetails'),
+                selectedGroupName: document.getElementById('selectedGroupName'),
+                memberCount: document.getElementById('memberCount'),
+                groupCreated: document.getElementById('groupCreated'),
+                membersList: document.getElementById('membersList'),
+                memberSelect: document.getElementById('memberSelect'),
+                memberChat: document.getElementById('memberChat'),
+                themeButtons: document.querySelectorAll('.theme-btn')
+            };
+
+            function init() {
+                applyTheme(state.currentTheme);
+                
+                if (!state.sidebarOpen) {
+                    toggleSidebar();
+                }
+                
+                loadGroups();
+                setupEventListeners();
+                updateThemeButtons();
+            }
+
+            function setupEventListeners() {
+                elements.sidebarToggle.addEventListener('click', toggleSidebar);
+                elements.menuToggle.addEventListener('click', toggleSidebar);
+                
+                elements.themeButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const theme = this.getAttribute('data-theme');
+                        switchTheme(theme);
+                    });
+                });
+                
+                elements.memberSelect.addEventListener('change', function() {
+                    const selectedMember = this.value;
+                    if (selectedMember) {
+                        loadMemberChat(selectedMember);
+                    } else {
+                        showNoChatSelected();
+                    }
+                });
+            }
+
+            function switchTheme(theme) {
+                state.currentTheme = theme;
+                applyTheme(theme);
+                localStorage.setItem('caltech-theme', theme);
+                updateThemeButtons();
+            }
+
+            function applyTheme(theme) {
+                document.body.className = `${theme}-mode`;
+            }
+
+            function updateThemeButtons() {
+                elements.themeButtons.forEach(btn => {
+                    if (btn.getAttribute('data-theme') === state.currentTheme) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            function toggleSidebar() {
+                elements.sidebar.classList.toggle('collapsed');
+                elements.sidebarToggle.querySelector('i').classList.toggle('fa-chevron-left');
+                elements.sidebarToggle.querySelector('i').classList.toggle('fa-chevron-right');
+                
+                state.sidebarOpen = !elements.sidebar.classList.contains('collapsed');
+                localStorage.setItem('caltech-sidebar', state.sidebarOpen ? 'open' : 'closed');
+            }
+
+            function loadGroups() {
+                elements.groupsList.innerHTML = '';
+                
+                if (state.groups.length === 0) {
+                    const emptyState = document.createElement('li');
+                    emptyState.innerHTML = '<p style="padding: 12px; color: var(--text-secondary);">No groups created yet</p>';
+                    elements.groupsList.appendChild(emptyState);
+                    return;
+                }
+                
+                state.groups.forEach(group => {
+                    const li = document.createElement('li');
+                    li.setAttribute('data-group-id', group.id);
+                    li.innerHTML = `<i class="fas fa-users"></i> ${group.name}`;
+                    
+                    li.addEventListener('click', function() {
+                        selectGroup(group);
+                    });
+                    
+                    elements.groupsList.appendChild(li);
+                });
+            }
+
+            function selectGroup(group) {
+                state.selectedGroup = group;
+                
+                // Update UI
+                elements.groupsWelcome.style.display = 'none';
+                elements.groupDetails.style.display = 'block';
+                
+                // Set group info
+                elements.selectedGroupName.textContent = group.name;
+                elements.memberCount.textContent = `${group.members.length} members`;
+                
+                const createdDate = new Date(group.created);
+                elements.groupCreated.textContent = `Created on ${createdDate.toLocaleDateString()}`;
+                
+                // Load members
+                loadMembers(group.members);
+                
+                // Populate member select dropdown
+                populateMemberSelect(group.members);
+                
+                // Clear chat area
+                showNoChatSelected();
+                
+                // Mark as active in sidebar
+                document.querySelectorAll('#groupsList li').forEach(item => {
+                    if (item.getAttribute('data-group-id') === group.id) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            function loadMembers(members) {
+                elements.membersList.innerHTML = '';
+                
+                members.forEach(member => {
+                    const memberElement = document.createElement('div');
+                    memberElement.className = 'member-item';
+                    memberElement.innerHTML = `
+                        <div class="member-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="member-info">
+                            <div class="member-name">${member}</div>
+                            <div class="member-email">${member}</div>
+                        </div>
+                    `;
+                    
+                    elements.membersList.appendChild(memberElement);
+                });
+            }
+
+            function populateMemberSelect(members) {
+                elements.memberSelect.innerHTML = '<option value="">Select a member</option>';
+                
+                members.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member;
+                    option.textContent = member;
+                    elements.memberSelect.appendChild(option);
+                });
+            }
+
+            function loadMemberChat(memberEmail) {
+                const groupId = state.selectedGroup.id;
+                const chatKey = `${groupId}_${memberEmail}`;
+                
+                // Get chat history for this member
+                let chatHistory = state.memberChats[chatKey] || [];
+                
+                // If no history exists, create some sample messages
+                if (chatHistory.length === 0) {
+                    chatHistory = [
+                        {
+                            id: 'msg_1',
+                            sender: 'user',
+                            text: `Hello ${memberEmail}, welcome to our group chat!`,
+                            timestamp: '10:30 AM'
+                        },
+                        {
+                            id: 'msg_2',
+                            sender: 'assistant',
+                            text: `This is the chat history with ${memberEmail}. You can have separate conversations with each group member.`,
+                            timestamp: '10:32 AM'
+                        },
+                        {
+                            id: 'msg_3',
+                            sender: 'user',
+                            text: `I've shared the project details with you. Let me know your thoughts.`,
+                            timestamp: '10:35 AM'
+                        }
+                    ];
+                    
+                    // Save sample chat
+                    state.memberChats[chatKey] = chatHistory;
+                    localStorage.setItem('caltech-member-chats', JSON.stringify(state.memberChats));
+                }
+                
+                // Display chat
+                displayMemberChat(chatHistory);
+            }
+
+            function displayMemberChat(messages) {
+                elements.memberChat.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    elements.memberChat.innerHTML = `
+                        <div class="empty-chat">
+                            <i class="fas fa-comment-slash"></i>
+                            <p>No messages yet with this member</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                messages.forEach(message => {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = `message message-${message.sender}`;
+                    
+                    const avatarClass = message.sender === 'user' ? 'user-avatar' : 'assistant-avatar';
+                    const avatarIcon = message.sender === 'user' ? 'fas fa-user' : 'fas fa-robot';
+                    const bubbleClass = message.sender === 'user' ? 'user-bubble' : 'assistant-bubble';
+                    const timeClass = message.sender === 'user' ? 'user-time' : '';
+                    
+                    messageElement.innerHTML = `
+                        ${message.sender === 'assistant' ? 
+                            `<div class="message-avatar assistant-avatar">
+                                <i class="${avatarIcon}"></i>
+                            </div>` : ''
+                        }
+                        <div class="message-content">
+                            <div class="message-bubble ${bubbleClass}">
+                                ${message.text}
+                            </div>
+                            <div class="message-time ${timeClass}">${message.timestamp}</div>
+                        </div>
+                        ${message.sender === 'user' ? 
+                            `<div class="message-avatar user-avatar">
+                                <i class="${avatarIcon}"></i>
+                            </div>` : ''
+                        }
+                    `;
+                    
+                    elements.memberChat.appendChild(messageElement);
+                });
+                
+                // Scroll to bottom
+                elements.memberChat.scrollTop = elements.memberChat.scrollHeight;
+            }
+
+            function showNoChatSelected() {
+                elements.memberChat.innerHTML = `
+                    <div class="no-chat-selected">
+                        <i class="fas fa-comment-dots"></i>
+                        <p>Select a member to view chat history</p>
+                    </div>
+                `;
+            }
+
+            // Initialize the page
+            init();
+        });
+    </script>
+</body>
+</html>
